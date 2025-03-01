@@ -54,11 +54,21 @@ const changeAmountOwed = async (req, res) => {
 
 }
 
-const groupOwesYou = async (req, res) => {
+const youOweOthers = async (req, res) => {
     const { username } = req.params
     /*
-    MATCH (user:User {userId: $userId})-[r:MONEY_OWED]->()
-    RETURN SUM(r.amount) AS totalAmount
+        MATCH (user:User {userId: 'specificUserId'})-[r:MONEY_OWED]->(friend)
+        RETURN user.name AS userName, friend.name AS friendName, r.amount
+    */
+    res.status(200).json(User)
+}
+
+
+const othersOweYou = async (req, res) => {
+    const { username } = req.params
+    /*
+        MATCH (otherUser:User)-[r:MONEY_OWED]->(user:User {username: 'username'})
+        RETURN user.username AS userName, otherUser.name AS friendName, r.amount
     */
     res.status(200).json(User)
 }
@@ -114,7 +124,6 @@ module.exports = (
 
 
 
-// howMuchYouOweEveryone
 
 // Done: 
 
@@ -123,6 +132,7 @@ module.exports = (
 // whosInGroupByID
 // changeAmountOwed
 // howMuchEveryoneInGroupOwesYou
+// howMuchYouOweEveryone
 
 
 
