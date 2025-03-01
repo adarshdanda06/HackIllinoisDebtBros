@@ -32,7 +32,13 @@ const joinGroup = async (req, res) => {
     try {
         const result = await session.run(
             `MATCH (user: User {username: $username})
-            SET user.groupID = $groupID`,
+            SET user.groupID = $groupID
+
+            WITH user
+            MATCH (otherUser: User)
+            WHERE user.groupID = otherUser.groupID and user.username <> otherUser.username
+            MERGE (user) -> [:MONEY_OWED {amount: 0}] -> (otherUser)
+            MERGE (otherUser) -> [:MONEY_OWED {amount: 0}] -> (user)`,
             { username, group_id }
         )
         res.json(result)
