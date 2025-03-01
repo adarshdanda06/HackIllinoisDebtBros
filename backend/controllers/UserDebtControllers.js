@@ -1,22 +1,13 @@
-const pool = require('../../database/db')
-
-// cerate new user
+// create new user
 const createUser = async (req,res) => {
     try {
         const { username, password } = req.body
-        const User = await pool.query(
-
-
-            [username, password, email, code]
-        )
-
 
         /*
         Query To Create
         x = Randomly generated: random
         CREATE (u1: User {username: $username, password: $password, group: $groupID})
         */
-        res.status(200).json(User)
     } catch (error) {
         res.status(400).json(error.message)
     } 
@@ -39,7 +30,6 @@ const joinGroup = async (req, res) => {
     */
 
 
-    res.status(200).json(User)
 }
 
 
@@ -50,7 +40,6 @@ const changeAmountOwed = async (req, res) => {
     MATCH (u1: User {username: $username})-[r:MONEY_OWED]->(u2: User {username: $otherUsername})
     SET r.amount = $amount
     */
-    res.status(200).json(User)
 
 }
 
@@ -60,7 +49,6 @@ const youOweOthers = async (req, res) => {
         MATCH (user:User {userId: 'specificUserId'})-[r:MONEY_OWED]->(friend)
         RETURN user.name AS userName, friend.name AS friendName, r.amount
     */
-    res.status(200).json(User)
 }
 
 
@@ -70,57 +58,26 @@ const othersOweYou = async (req, res) => {
         MATCH (otherUser:User)-[r:MONEY_OWED]->(user:User {username: 'username'})
         RETURN user.username AS userName, otherUser.name AS friendName, r.amount
     */
-    res.status(200).json(User)
 }
 
 const getUsersInGroupByID = async (req, res) => {
     const { code } = req.params
-    const Users = await pool.query(
-        "SELECT * FROM user_table WHERE code = $1"
-        [code]    
-    )
     /*
     MATCH (user:User {groupId: $groupId})
     RETURN user
     */
 
-    res.status(200).json(Users)
 }
 
-const getUserByName = async (req, res) => {
-    const { username } = req.params
-    const User = await pool.query(
-        "SELECT * FROM user_table WHERE username = $1", 
-        [username]
-    )
-    res.status(200).json(User)
-}
 
-const updateUser = async (req, res) => {
-    const { username, password, email, code } = req.body
-    const User = await pool.query(
-        "UPDATE user_table SET (password, email, code) = ($1, $2, $3) WHERE username = $4"
-        [password, email, code, username]
-    )
-    res.status(200).json(User)
-}
-
-const deleteUser = async (req, res) => {
-    const { username } = req.params
-    const User = pool.query(
-        "DELETE FROM username * WHERE username = $1",
-        [username]
-    )
-}
 
 module.exports = (
     createUser,
     getUsersInGroupByID,
-    getUserByName,
-    updateUser,
-    deleteUser,
     changeAmountOwed,
-    joinGroup
+    joinGroup,
+    youOweOthers,
+    othersOweYou
 )
 
 
