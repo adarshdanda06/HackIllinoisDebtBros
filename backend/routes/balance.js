@@ -1,6 +1,5 @@
 const express = require('express')
 const {
-    createUser,
     updateGroupId,
     updateDebt,
     getDebt,
@@ -10,16 +9,19 @@ const {
 
 const router = express.Router()
 
+// GET the users in a group by groupID
 router.get('/:groupID', getUsersInGroup)
 
-router.get('/', getDebt)
+// GET a user's debt
+router.get('/debt', getDebt)
 
-router.get('/', getCredit)
+// GET a user's credit
+router.get('/credit', getCredit)
 
-router.post('/', createUser)
-
+// PATCH a user's credit and friend's debt  
 router.patch('/', updateDebt)
 
-router.patch('/', updateGroupId)
+// PATCH a user's groupID to join a group
+router.patch('/join', updateGroupId)
 
 module.exports = router
