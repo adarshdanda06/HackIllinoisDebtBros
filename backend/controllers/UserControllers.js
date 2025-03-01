@@ -118,7 +118,9 @@ module.exports = (
     getUsersInGroupByID,
     getUserByName,
     updateUser,
-    deleteUser
+    deleteUser,
+    changeAmountOwed,
+    joinGroup
 )
 
 
