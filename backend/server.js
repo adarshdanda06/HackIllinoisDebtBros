@@ -23,6 +23,10 @@ try {
     const USER = 'neo4j'
     const PASSWORD = 'SYJog0Ps7HJLMg6cpGSwGxftlfuIjdqreFewtbMaIP8'
     driver = neo4j.driver(URI, neo4j.auth.basic(USER, PASSWORD))
+    console.log("Connection successful")
+    app.listen(4000, () => {
+        console.log('currently listening on port 4000')
+    })
 } catch (err) {
     console.log(`Connection error\n${err}\nCause: ${err.cause}`)
 }
@@ -44,7 +48,3 @@ const connect = (async () => {
 })();*/
 
 module.exports = driver;
-
-app.listen(4000, () => {
-    console.log('currently listening on port 4000')
-});
