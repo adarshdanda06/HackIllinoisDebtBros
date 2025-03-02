@@ -6,8 +6,11 @@ const {
     getCredit,
     getUsersInGroup
 } = require('../controllers/UserBalanceController')
+const requireAuth = require('../middleware/requireAuth')
 
 const router = express.Router()
+
+router.use(requireAuth)
 
 // GET the users in a group by groupID
 router.get('/:groupID', getUsersInGroup)

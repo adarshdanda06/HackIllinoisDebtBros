@@ -1,5 +1,6 @@
 const express = require('express')
 const balanceRoutes = require('./routes/balance')
+const userRoutes = require('./routes/user')
 const neo4j = require('neo4j-driver')
 
 const app = express()
@@ -14,6 +15,7 @@ app.use((req, res, next) => {
 
 // routes
 app.use('/api/balance', balanceRoutes)
+app.use('/api/user', userRoutes)
 
 // connecting to db
 let driver;

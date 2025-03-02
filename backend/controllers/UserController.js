@@ -7,9 +7,10 @@ const createToken = (id) => {
     return jwt.sign({_id: id}, process.env.SECRET, { expiresIn: '3d' })
 }
 
-const hashPassword = (password) => {
+const hashPassword = async (password) => {
     const salt = await bcrypt.genSalt(10)
     const hash = await bcrypt.hash(password, salt)
+    return hash
 }
 
 // Create new user
@@ -31,12 +32,13 @@ const signup = async (req,res) => {
 
         if (count.records[0].get('count') > 0) {
             res.status(400).json({error: "user with username already exists!"})
+            return
         }
 
-        const hashedPassword = hashPassword(password)
+        const hashedPassword = await hashPassword(password)
         const result = await session.run(
             `CREATE (u1: User {username: $username, password: $pass, groupID: $groupID})`,
-            { username, password: hashPassword, groupID }
+            { username, password: hashedPassword, groupID }
         )
 
         const token = createToken(username)
@@ -59,12 +61,13 @@ const login = async (req, res) => {
 
         const result = await session.run(
             `MATCH(u:User {username: $username})
-            RETURN COUNT(u) AS count`,
+            RETURN u.password AS password`,
             { username }   
         )
 
-        if (count.records[0].get('count') <= 0) {
+        if (result.records.length === 0 || result.records[0].get('password') == null) {
             res.status(400).json({error: "No user with this username"})
+            return
         }
         
         const userPassword = result.records[0].get('password')
@@ -75,7 +78,7 @@ const login = async (req, res) => {
             throw Error('Incorrect password')
         }
 
-        token = createToken(username)
+        const token = createToken(username)
         res.status(200).json({username, token})
     } catch (error) {
         res.status(400).json(error.message)

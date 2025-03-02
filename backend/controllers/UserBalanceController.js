@@ -113,7 +113,6 @@ const getUsersInGroup = async (req, res) => {
 
 
 module.exports = {
-    createUser,
     updateGroupId,
     updateDebt,
     getDebt,
