@@ -110,6 +110,26 @@ const getUsersInGroup = async (req, res) => {
     }
 }
 
+const getGroupID = async (req, res) => {
+    const { username } = req.body
+
+    let session = driver.session()
+    try {
+        const result = await session.run(
+            `MATCH (user:User {username = $username})
+            RETURN user.groupID AS groupID`,
+            {username}
+        )
+
+        const groupID = result.records.map(record => record.get('groupID'))
+        res.status(200).json(groupID)
+    } catch (error) {
+        res.status(400).json(error.message)
+    } finally {
+        await session.close()
+    }
+}
+
 
 
 module.exports = {
@@ -117,7 +137,8 @@ module.exports = {
     updateDebt,
     getDebt,
     getCredit,
-    getUsersInGroup
+    getUsersInGroup,
+    getGroupID
 }
 
 
