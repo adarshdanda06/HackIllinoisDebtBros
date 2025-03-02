@@ -3,6 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { ArrowLeft } from "lucide-react"
 import Link from "next/link"
 import { CreateGroupForm } from "@/components/create-group-form"
+import { getUsername } from "@/utils/auth"; 
 
 export default function CreateGroupPage() {
   return (
@@ -16,17 +17,17 @@ export default function CreateGroupPage() {
         </Link>
         <div>
           <h2 className="text-3xl font-bold tracking-tight">Create Group</h2>
-          <p className="text-muted-foreground">Create a new expense tracking group</p>
+          <p className="text-muted-foreground">Share your group code with friends</p>
         </div>
       </div>
 
       <Card className="mx-auto max-w-md">
         <CardHeader>
-          <CardTitle>Group Details</CardTitle>
-          <CardDescription>Fill in the details to create your new group</CardDescription>
+          <CardTitle>Group Created</CardTitle>
+          <CardDescription>Share this code with others to let them join your group</CardDescription>
         </CardHeader>
         <CardContent>
-          <CreateGroupForm />
+          <CreateGroupForm  username={getUsername() ?? "Guest"}/>
         </CardContent>
       </Card>
     </div>
