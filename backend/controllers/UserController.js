@@ -2,6 +2,7 @@
 const { v1: uuidv1 } = require('uuid')
 
 // Create new user
+// Works
 const createUser = async (req,res) => {
     const { username, password } = req.body
     const groupID = uuidv1()

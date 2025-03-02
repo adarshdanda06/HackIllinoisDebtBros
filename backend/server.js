@@ -12,8 +12,6 @@ app.use((req, res, next) => {
     next()
 }) 
 
-
-
 app.use('/api/balance', balanceRoutes)
 
 

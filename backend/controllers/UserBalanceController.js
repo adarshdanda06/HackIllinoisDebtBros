@@ -37,6 +37,7 @@ const testConnection = async () => {
 testConnection();
 
 // Update user's groupID to join new group
+// Works
 const updateGroupId = async (req, res) => {
     const { username, groupID } = req.body
     let driver = await initDriver();
@@ -61,16 +62,16 @@ const updateGroupId = async (req, res) => {
     }
 }
 
-
+// Works
 const updateDebt = async (req, res) => {
     const { recipient_username, sender_username, amount } = req.body
     let driver = await initDriver();
     let session = driver.session();
     try {
         const result = await session.run(
-            `MATCH (u1: User {username: $recipient_username})-[r:MONEY_OWED]->(u2: User {username: $sender_username})
+            `MATCH (u1: User {username: $sender_username})-[r:MONEY_OWED]->(u2: User {username: $recipient_username})
             SET r.amount = r.amount + $amount`,
-            { recipient_username, sender_username, amount }
+            { sender_username, recipient_username, amount }
         )
         res.status(200).json(result)
     } catch (error) {
@@ -80,28 +81,32 @@ const updateDebt = async (req, res) => {
     }
 }
 
+
 const getDebt = async (req, res) => {
-    const { username } = req.body
+    const { username } = req.body;
     let driver = await initDriver();
     let session = driver.session();
+
     try {
         const result = await session.run(
-            `MATCH (user:User {username: $username})-[r:MONEY_OWED]->(friend)
-            RETURN user.username AS userName, friend.username AS friendName, r.amount`,
-            { username }
+            `MATCH (user:User {username: $username})-[r:MONEY_OWED]->(otherUser:User)
+            RETURN user.username AS userName, otherUser.username AS friendName, r.amount AS amount`,
+            { username: String(username) }
         )
+        console.log(username);
         const records = result.records.map(record => ({
             userName: record.get('userName'),
             friendName: record.get('friendName'),
             amount: record.get('amount')
         }));
-        res.status(200).json(records)
+        res.status(200).json(records) // chg to records
     } catch (error) {
         res.status(400).json(error.message)
     } finally {
         await session.close();
     }
 }
+
 
 
 const getCredit = async (req, res) => {
@@ -111,7 +116,7 @@ const getCredit = async (req, res) => {
     try {
         const result = await session.run(
             `MATCH (otherUser:User)-[r:MONEY_OWED]->(user:User {username: $username})
-            RETURN user.username AS userName, otherUser.username AS friendName, r.amount`,
+            RETURN user.username AS userName, otherUser.username AS friendName, r.amount AS amount`,
             { username }
         )
         const records = result.records.map(record => ({
@@ -127,6 +132,7 @@ const getCredit = async (req, res) => {
     }
 }
 
+// Works
 const getUsersInGroup = async (req, res) => {
     const { groupID } = req.params
     let driver = await initDriver();
@@ -153,7 +159,7 @@ module.exports = {
     updateDebt,
     getDebt,
     getCredit,
-    getUsersInGroup
+    getUsersInGroup,
 }
 
 
