@@ -7,7 +7,9 @@ const {
     getCredit,
     getUsersInGroup,
     getDebt
+    getGroupID
 } = require('../controllers/UserBalanceController')
+const requireAuth = require('../middleware/requireAuth')
 
 const {
     createUser
@@ -15,6 +17,14 @@ const {
 
 const router = express.Router()
 
+
+router.use(requireAuth)
+
+// GET a user's group code
+router.get('/', getGroupID)
+
+// GET the users in a group by groupID
+router.get('/:groupID', getUsersInGroup)
 
 router.get('/credit', getCredit); // works
 
