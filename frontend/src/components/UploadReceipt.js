@@ -1,50 +1,41 @@
-
-import { useRef, useState } from "react";
+import { useState } from "react";
+import axios from "axios";
+import ReceiptForm from "./ReceiptForm";
 
 const UploadReceipt = () => {
-    const fileInputRef = useRef(null);
-    const [fileName, setFileName] = useState("No file selected");
-
-    const handleButtonClick = () => {
-        fileInputRef.current.click(); 
-    };
+    const [file, setFile] = useState(null);
+    const [receiptData, setReceiptData] = useState(null);
+    const [showPopup, setShowPopup] = useState(false);
 
     const handleFileChange = (event) => {
-        const file = event.target.files[0];
-        if (file) {
-            setFileName(file.name);
+        setFile(event.target.files[0]);
+    };
+
+    const handleUpload = async () => {
+        console.log("Upload button clicked!")
+        if (!file) return alert("Please select a file");
+
+        try {
+            const formData = new FormData();
+            formData.append("receipt", file);
+
+            const response = await axios.post("http://localhost:4000/api/receipt", formData, {
+                headers: { "Content-Type": "multipart/form-data" },
+            });
+
+            console.log("Upload Success:", response.data);
+            setReceiptData(response.data); 
+            setShowPopup(true);
+        } catch (error) {
+            console.error("Upload Failed:", error.response?.data || error.message);
         }
     };
 
     return (
-        <div className="container">
-            <div className="card">
-                <h3>Upload Files</h3>
-                <div className="drop_box">
-                    <header>
-                        <h4>Select File here</h4>
-                    </header>
-                    <p>Supported File Types: JPEG, PNG</p>
-
-                    {/* Hidden file input */}
-                    <input 
-                        type="file" 
-                        hidden 
-                        accept=".jpeg,.png" 
-                        id="fileID"
-                        ref={fileInputRef}
-                        onChange={handleFileChange} // ✅ Handle file selection
-                    />
-
-                    {/* Button to open file picker */}
-                    <button className="btn" onClick={handleButtonClick}>
-                        Choose File
-                    </button>
-
-                    {/* Show selected file name */}
-                    <p>{fileName}</p>
-                </div>
-            </div>
+        <div>
+            <input type="file" accept="image/jpeg,image/png,image/heic,image/heif" onChange={handleFileChange} />
+            <button onClick={handleUpload}>Upload Receipt</button>
+            {showPopup && <ReceiptForm receiptData={receiptData} onClose={() => setShowPopup(false)} />}
         </div>
     );
 };

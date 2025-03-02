@@ -1,29 +1,36 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
 
 const DebtsList = () => {
-    const [debts, setDebts] = useState([
-        { id: 1, name: "Alice", amount: 50, paid: false },
-        { id: 2, name: "Bob", amount: 100, paid: true },
-        { id: 3, name: "Charlie", amount: 75, paid: false }
-    ]);
+    const [debts, setDebts] = useState([]);
 
-    // Toggle debt status (Paid/Unpaid)
-    const togglePaidStatus = (id) => {
-        setDebts(debts.map(debt => 
-            debt.id === id ? { ...debt, paid: !debt.paid } : debt
-        ));
-    };
+    // Fetch debts from backend
+    useEffect(() => {
+        const fetchDebts = async () => {
+            try {
+                const user = JSON.parse(localStorage.getItem("user")); // Ensure user is stored in local storage
+                if (!user || !user.username) {
+                    console.error("No user found in local storage");
+                    return;
+                }
+
+                const response = await axios.post("http://localhost:4000/api/balance/debt", { username: user.username });
+                setDebts(response.data);
+            } catch (error) {
+                console.error("Error fetching debts:", error.response?.data || error.message);
+            }
+        };
+
+        fetchDebts();
+    }, []);
 
     return (
         <div className="debts-container">
             <h2>Debt List</h2>
             <ul>
                 {debts.map(debt => (
-                    <li key={debt.id} className={debt.paid ? "paid" : "unpaid"}>
-                        {debt.name} owes ${debt.amount} 
-                        <button onClick={() => togglePaidStatus(debt.id)}>
-                            {debt.paid ? "Mark Unpaid" : "Mark Paid"}
-                        </button>
+                    <li key={debt.friendName} className={debt.paid ? "paid" : "unpaid"}>
+                        {debt.userName} owes {debt.friendName} ${debt.amount}
                     </li>
                 ))}
             </ul>

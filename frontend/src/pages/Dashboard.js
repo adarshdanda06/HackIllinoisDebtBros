@@ -1,6 +1,7 @@
 import { useAuthContext } from "../hooks/useAuthContext";
 import UploadReceipt from "../components/UploadReceipt"
 import DebtsList from "../components/DebtList";
+import CreditList from "../components/CreditList";
 
 const Home = () => {
     const { user, groupID } = useAuthContext();
@@ -11,6 +12,7 @@ const Home = () => {
             <p>Your Group ID: {groupID}</p>
             <UploadReceipt/> 
             <DebtsList />
+            <CreditList/>
         </div>
     )
 }

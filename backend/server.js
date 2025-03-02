@@ -1,13 +1,20 @@
 const express = require('express')
 const balanceRoutes = require('./routes/balance')
 const userRoutes = require('./routes/user')
-const recieptRoutes = require('./routes/reciept')
+const receiptRoutes = require('./routes/receipt')
+
+const cors = require('cors')
 
 const app = express()
 
 // middleware
 app.use(express.json())
 app.use(express.static("public"))
+app.use(cors({
+    origin: "http://localhost:3000",
+    methods: "GET,POST,PUT,DELETE",
+    allowedHeaders: "Content-Type",
+}))
 
 app.use((req, res, next) => {
     console.log(req.path, req.method)
@@ -17,7 +24,7 @@ app.use((req, res, next) => {
 // routes
 app.use('/api/balance', balanceRoutes)
 app.use('/api/user', userRoutes)
-app.use('/api/reciept', recieptRoutes)
+app.use('/api/receipt', receiptRoutes)
 
 // listening for requests
 app.listen(4000, () => {

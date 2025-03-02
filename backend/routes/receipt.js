@@ -90,6 +90,6 @@ const router = express.Router()
 
 router.use(requireAuth)
 
-router.post('/receipt', upload.single("receipt"), vision_pro);
+router.post('/', upload.single("receipt"), vision_pro);
 
-module.exports = router;
+module.exports = router
