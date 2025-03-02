@@ -12,7 +12,8 @@ const {
 const requireAuth = require('../middleware/requireAuth')
 
 const {
-    createUser
+    signup,
+    login
 } = require('../controllers/UserController')
 
 const router = express.Router()
@@ -35,7 +36,7 @@ router.get('/debt', getDebt); // works
 router.get('/:groupID', getUsersInGroup); // works
 
 
-router.post('/createUser', createUser); // works
+router.post('/createUser', signup); // works
 
 
 router.patch('/', updateDebt); // works

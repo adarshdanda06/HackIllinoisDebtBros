@@ -83,7 +83,7 @@ const vision_pro = async (req, res) => {
     }
 }
 
-const router = express.router()
+const router = express.Router()
 
 router.use(requireAuth)
 
