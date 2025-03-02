@@ -101,8 +101,8 @@ const getUsersInGroup = async (req, res) => {
             RETURN user.username AS username`,
             { groupID }
         )
-        const records = result.records.map(record => record.get('username'))
-        res.status(200).json(records)
+        const users = result.records.map(record => record.get('username'))
+        res.status(200).json(users)
     } catch (error) {
         res.status(400).json(error.message)
     } finally {
@@ -121,7 +121,7 @@ const getGroupID = async (req, res) => {
             {username}
         )
 
-        const groupID = result.records.map(record => record.get('groupID'))
+        const groupID = result.records[0].get('groupID')
         res.status(200).json(groupID)
     } catch (error) {
         res.status(400).json(error.message)
