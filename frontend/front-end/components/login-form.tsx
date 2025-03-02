@@ -1,9 +1,6 @@
 "use client"
 
 import Link from "next/link"
-
-import type React from "react"
-
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
@@ -13,28 +10,62 @@ import { Loader2 } from "lucide-react"
 
 export function LoginForm() {
   const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState("");
   const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setIsLoading(true)
+    setError(""); // Clear previous errors
 
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false)
-      router.push("/dashboard")
-    }, 1500)
+    const formData = new FormData(e.currentTarget);
+    const username = formData.get("username") as string;
+    const password = formData.get("password") as string;
+
+    try {
+      const response = await fetch("http://localhost:5000/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password }),
+      })
+
+      const data = await response.json()
+
+      if (response.ok) {
+        console.log("Token received:", data.token);
+        localStorage.setItem("token", data.token);
+        router.push("/dashboard"); // Redirect on success
+      } else {
+        setError(data.error || "Login failed");
+      }
+    } catch (err) {
+      setError("Server error");
+      console.error("Login error:", err);
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="space-y-2">
-        <Label htmlFor="email">Email</Label>
-        <Input id="email" type="email" placeholder="john@example.com" required />
+        <Label htmlFor="username">Username</Label>
+        <Input 
+          id="username" 
+          name="username"  // ✅ Added name attribute
+          type="text" 
+          placeholder="johndoe" 
+          required 
+        />
       </div>
       <div className="space-y-2">
         <Label htmlFor="password">Password</Label>
-        <Input id="password" type="password" required />
+        <Input 
+          id="password" 
+          name="password" // ✅ Added name attribute
+          type="password" 
+          required 
+        />
       </div>
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-2">
@@ -50,6 +81,9 @@ export function LoginForm() {
           Forgot password?
         </Link>
       </div>
+
+      {error && <p className="text-red-500 text-sm">{error}</p>} {/* ✅ Shows error message */}
+
       <Button type="submit" className="w-full" disabled={isLoading}>
         {isLoading ? (
           <>
@@ -63,4 +97,3 @@ export function LoginForm() {
     </form>
   )
 }
-

@@ -2,10 +2,9 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { ArrowLeft } from "lucide-react"
 import Link from "next/link"
-import { CreateGroupForm } from "@/components/create-group-form"
-import { getUsername } from "@/utils/auth"; 
+import { JoinGroupForm } from "@/components/join-group-form"
 
-export default function CreateGroupPage() {
+export default function JoinGroupPage() {
   return (
     <div className="space-y-8">
       <div className="flex items-center gap-2">
@@ -16,18 +15,18 @@ export default function CreateGroupPage() {
           </Button>
         </Link>
         <div>
-          <h2 className="text-3xl font-bold tracking-tight">Create Group</h2>
-          <p className="text-muted-foreground">Share your group code with friends</p>
+          <h2 className="text-3xl font-bold tracking-tight">Join Group</h2>
+          <p className="text-muted-foreground">Enter a group code to join</p>
         </div>
       </div>
 
       <Card className="mx-auto max-w-md">
         <CardHeader>
-          <CardTitle>Group Created</CardTitle>
-          <CardDescription>Share this code with others to let them join your group</CardDescription>
+          <CardTitle>Enter Group Code</CardTitle>
+          <CardDescription>Ask your friend for the 6-character group code</CardDescription>
         </CardHeader>
         <CardContent>
-          <CreateGroupForm  username={getUsername() ?? "Guest"}/>
+          <JoinGroupForm/>
         </CardContent>
       </Card>
     </div>
