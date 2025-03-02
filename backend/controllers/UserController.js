@@ -1,4 +1,4 @@
-const driver = require('../server')
+//const driver = require('../server')
 const { v1: uuidv1 } = require('uuid')
 
 // Create new user
@@ -8,10 +8,6 @@ const createUser = async (req,res) => {
 
     let session = driver.session()
     try {
-        const exists = await session.run(
-            ``
-        )
-
         const result = await session.run(
             `CREATE (u1: User {username: $username, password: $password, groupID: $groupID})`,
             { username, password, groupID }
@@ -23,3 +19,7 @@ const createUser = async (req,res) => {
         await session.close()
     }        
 }
+
+module.exports = {
+    createUser
+};

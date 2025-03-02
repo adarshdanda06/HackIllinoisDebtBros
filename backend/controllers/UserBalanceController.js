@@ -1,9 +1,45 @@
-const driver = require('../server')
+const neo4j = require('neo4j-driver')
+
+const initDriver = async () => {
+    try {
+        // connecting to db
+        const URI = 'neo4j+s://7d1a0d62.databases.neo4j.io'; // Replace with your actual URI
+        const USER = 'neo4j'; // Replace with your actual username
+        const PASSWORD = 'SYJog0Ps7HJLMg6cpGSwGxftlfuIjdqreFewtbMaIP8'; // Replace with your actual password
+
+        driver = neo4j.driver(URI, neo4j.auth.basic(USER, PASSWORD));
+        const session = driver.session();
+        try {
+            const result = await session.run('RETURN 1 AS test');
+            console.log('Connection test successful:', result.records[0].get('test').toInt() === 1);
+        } finally {
+            await session.close();
+        }
+        return driver;
+    } catch (err) {
+        console.error('Connection test failed:', err);
+        throw err;
+    }
+};
+
+
+const testConnection = async () => {
+    let driver = await initDriver();
+    try {
+        const info = await driver.getServerInfo();
+        console.log('Connection established: ', info);
+        console.log("Driver has connected")
+    } catch (error) {
+        console.error('Connection test failed:', error);
+    } 
+};
+
+testConnection();
 
 // Update user's groupID to join new group
 const updateGroupId = async (req, res) => {
     const { username, groupID } = req.body
-
+    let driver = await initDriver();
     let session = driver.session();
     try {
         const result = await session.run(
@@ -13,8 +49,8 @@ const updateGroupId = async (req, res) => {
             WITH user
             MATCH (otherUser: User)
             WHERE user.groupID = otherUser.groupID and user.username <> otherUser.username
-            MERGE (user) -> [:MONEY_OWED {amount: 0}] -> (otherUser)
-            MERGE (otherUser) -> [:MONEY_OWED {amount: 0}] -> (user)`,
+            MERGE (user)-[:MONEY_OWED {amount: 0}]->(otherUser)
+            MERGE (otherUser)-[:MONEY_OWED {amount: 0}]->(user)`,
             { username, groupID }
         )
         res.status(200).json(result)
@@ -28,7 +64,7 @@ const updateGroupId = async (req, res) => {
 
 const updateDebt = async (req, res) => {
     const { recipient_username, sender_username, amount } = req.body
-
+    let driver = await initDriver();
     let session = driver.session();
     try {
         const result = await session.run(
@@ -46,7 +82,7 @@ const updateDebt = async (req, res) => {
 
 const getDebt = async (req, res) => {
     const { username } = req.body
-
+    let driver = await initDriver();
     let session = driver.session();
     try {
         const result = await session.run(
@@ -70,7 +106,7 @@ const getDebt = async (req, res) => {
 
 const getCredit = async (req, res) => {
     const { username } = req.body
-
+    let driver = await initDriver();
     let session = driver.session()
     try {
         const result = await session.run(
@@ -93,7 +129,7 @@ const getCredit = async (req, res) => {
 
 const getUsersInGroup = async (req, res) => {
     const { groupID } = req.params
-
+    let driver = await initDriver();
     let session = driver.session()
     try {
         const result = await session.run(
@@ -113,7 +149,6 @@ const getUsersInGroup = async (req, res) => {
 
 
 module.exports = {
-    createUser,
     updateGroupId,
     updateDebt,
     getDebt,
