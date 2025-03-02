@@ -6,7 +6,7 @@ const {
     updateDebt,
     getCredit,
     getUsersInGroup,
-    getDebt
+    getDebt,
     getGroupID
 } = require('../controllers/UserBalanceController')
 const requireAuth = require('../middleware/requireAuth')
