@@ -67,7 +67,7 @@ const signup = async (req,res) => {
         )
         console.log("success")
         const token = createToken(username)
-        res.status(200).json({username, token})
+        res.status(200).json({username, groupID, token})
     } catch (error) {
         res.status(400).json(`Error: ${error.message}`)
     } finally {
@@ -99,13 +99,20 @@ const login = async (req, res) => {
         const userPassword = result.records[0].get('password')
         
         const match = await bcrypt.compare(password, userPassword)
-        
+    
+        const group = await session.run(
+            `MATCH (u:User {username: $username})
+            RETURN u.groupID AS groupID
+            `,
+            { username }
+        );
+
         if (!match) {
-            throw Error('Incorrect password')
+            throw Error('Incorrect password');
         }
 
         const token = createToken(username)
-        res.status(200).json({username, token})
+        res.status(200).json({username, "groupID": group.records[0].get("groupID"), token})
     } catch (error) {
         res.status(400).json(error.message)
     } finally {
