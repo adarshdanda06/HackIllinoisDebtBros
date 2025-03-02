@@ -1,11 +1,13 @@
 const express = require('express')
 const balanceRoutes = require('./routes/balance')
 const userRoutes = require('./routes/user')
-const recieptRoutes = require('./routes/reciept')
+const recieptRoutes = require('./routes/receipt')
 
 const app = express()
+const cors = require("cors");
 
 // middleware
+app.use(cors());
 app.use(express.json())
 app.use(express.static("public"))
 
@@ -17,7 +19,7 @@ app.use((req, res, next) => {
 // routes
 app.use('/api/balance', balanceRoutes)
 app.use('/api/user', userRoutes)
-app.use('/api/reciept', recieptRoutes)
+app.use('/api/receipt', recieptRoutes)
 
 // listening for requests
 app.listen(4000, () => {

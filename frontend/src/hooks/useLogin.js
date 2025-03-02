@@ -1,33 +1,33 @@
 import { useAuthContext } from "./useAuthContext";
 import { useState } from "react";
 
-export const useSignup = () => {
+export const useLogin = () => {
     const [error, setError] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
     const { dispatch } = useAuthContext();
 
-    const signup = async (username, password) => {
+    const login = async (username, password) => {
         setIsLoading(true);
         setError(null);
 
         try {
-            const response = await fetch("http://localhost:4000/api/user/login", {
+            const response = await fetch("http://localhost:4000/api/user/login", {  // ✅ Ensure port 4000
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ username: username.trim(), password: password.trim() }),
+                body: JSON.stringify({ username, password }),
             });
             
-            // 🔥 FIX: Ensure response is valid JSON before using it
+
             const json = await response.json();
-            
+
             if (!response.ok) {
-                throw new Error(json.error || "Signup failed");
+                throw new Error(json.error || "Login failed");
             }
 
-            // ✅ Store the full user object in localStorage (Including token)
+            // ✅ Store full user object, including token
             localStorage.setItem("user", JSON.stringify(json));
 
-            // ✅ Dispatch full user object to context
+            // ✅ Dispatch user object
             dispatch({ type: "LOGIN", payload: json });
 
             setIsLoading(false);
@@ -37,5 +37,5 @@ export const useSignup = () => {
         }
     };
 
-    return { signup, isLoading, error };
+    return { login, isLoading, error };
 };

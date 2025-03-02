@@ -114,7 +114,8 @@ const login = async (req, res) => {
         const token = createToken(username)
         res.status(200).json({username, "groupID": group.records[0].get("groupID"), token})
     } catch (error) {
-        res.status(400).json(error.message)
+        res.status(400).json({ error: error.message })
+
     } finally {
         await session.close()
     }

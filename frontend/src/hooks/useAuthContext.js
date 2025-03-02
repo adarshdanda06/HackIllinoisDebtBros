@@ -2,14 +2,11 @@ import { AuthContext } from "../context/AuthContext";
 import { useContext } from "react";
 
 export const useAuthContext = () => {
-    const context = useContext(AuthContext)
+    const context = useContext(AuthContext);
 
     if (!context) {
-        throw Error('useAuthContext must be used inside an AuthContextProvider')
+        throw new Error("useAuthContext must be used inside an AuthContextProvider");
     }
 
-    return {
-        user: context.username,
-        groupID: context.groupID
-    }
-}
+    return context;  // ✅ Fix: Return `context` directly
+};
