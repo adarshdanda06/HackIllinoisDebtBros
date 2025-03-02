@@ -3,9 +3,11 @@ const { v1: uuidv1 } = require('uuid')
 const neo4j = require('neo4j-driver')
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
+require('dotenv').config();
+
 
 const createToken = (id) => {
-    return jwt.sign({_id: id}, process.env.SECRET, { expiresIn: '3d' })
+    return jwt.sign({username: id}, "HackIllniDefSecret", { expiresIn: '3d' })
 }
 
 const hashPassword = async (password) => {
@@ -60,14 +62,14 @@ const signup = async (req,res) => {
 
         const hashedPassword = await hashPassword(password)
         const result = await session.run(
-            `CREATE (u1: User {username: $username, password: $pass, groupID: $groupID})`,
+            `CREATE (u1: User {username: $username, password: $password, groupID: $groupID})`,
             { username, password: hashedPassword, groupID }
         )
-
+        console.log("success")
         const token = createToken(username)
         res.status(200).json({username, token})
     } catch (error) {
-        res.status(400).json(error.message)
+        res.status(400).json(`Error: ${error.message}`)
     } finally {
         await session.close()
     }        

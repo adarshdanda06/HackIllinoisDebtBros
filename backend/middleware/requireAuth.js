@@ -8,10 +8,10 @@ const requireAuth = async (req, res, next) => {
         return res.status(401).json({ error: 'Authorization token required' });
     }
 
-    const token = authorization.split(' ')[1];
+    const token = authorization;
 
     try {
-        const { username } = jwt.verify(token, process.env.SECRET);
+        const { username } = jwt.verify(token, "HackIllniDefSecret");
 
         const session = driver.session();
         const result = await session.run(
@@ -30,7 +30,7 @@ const requireAuth = async (req, res, next) => {
         next();
     } catch (error) {
         console.log(error);
-        res.status(401).json({ error: 'Request is not authorized' });
+        res.status(401).json({ error: `Request is not authorized:  ${error.message}` });
     }
 };
 

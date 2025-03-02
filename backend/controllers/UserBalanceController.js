@@ -158,7 +158,7 @@ const getGroupID = async (req, res) => {
     let session = driver.session()
     try {
         const result = await session.run(
-            `MATCH (user:User {username = $username})
+            `MATCH (user:User {username: $username})
             RETURN user.groupID AS groupID`,
             {username}
         )

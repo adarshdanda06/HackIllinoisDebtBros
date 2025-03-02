@@ -22,15 +22,20 @@ const router = express.Router()
 router.use(requireAuth)
 
 // GET a user's group code
-router.get('/', getGroupID)
+router.get('/debt', getDebt);
+
+
+router.get('/credit', getCredit); 
+
+router.get('/', getGroupID);
 
 // GET the users in a group by groupID
-router.get('/:groupID', getUsersInGroup)
+router.get('/:groupID', getUsersInGroup);
 
-router.get('/credit', getCredit); // works
+// works
 
 
-router.get('/debt', getDebt); // works
+ // works
 
 
 router.get('/:groupID', getUsersInGroup); // works

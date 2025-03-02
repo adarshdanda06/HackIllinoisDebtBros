@@ -20,7 +20,6 @@ function imageToBase64(filePath) {
 const vision_pro = async (req, res) => {
     try {
         if (!req.file) return res.status(400).send("No file uploaded.");
-
         const allowedTypes = ["image/jpeg", "image/png", "image/heic", "image/heif"];
         if (!allowedTypes.includes(req.file.mimetype)) {
             fs.unlinkSync(req.file.path);
@@ -33,8 +32,7 @@ const vision_pro = async (req, res) => {
         if (req.file.mimetype.includes("heic") || req.file.mimetype.includes("heif")) {
             filePath = await convertToJpeg(filePath);
         }
-
-        const imageBase64 = await imageToBase64(filePath);
+        const imageBase64 = imageToBase64(filePath);
         fs.unlinkSync(filePath); // Cleanup after encoding
 
         const payload = {
@@ -47,11 +45,16 @@ const vision_pro = async (req, res) => {
                 }
             ]
         };
+        console.log("Before Erorr");
+
 
         const response = await axios.post(
-            `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro-vision:generateContent?key=${GEMINI_API_KEY}`,
+            `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro-vision:generateContent?key=${GEMINI_API_KEY}`,  // Updated model name
             payload
         );
+
+        console.log("After Error");
+
 
         if (!response.data || !response.data.candidates) {
             throw new Error("Invalid response from Gemini API");
@@ -79,7 +82,7 @@ const vision_pro = async (req, res) => {
             fs.unlinkSync(req.file.path);
         }
         console.error("Processing Error:", error.message);
-        res.status(500).json({ error: "Error processing receipt", message: error.message });
+        res.status(error.status).json({ error: "Error processing receipt", message: error });
     }
 }
 
@@ -87,6 +90,6 @@ const router = express.Router()
 
 router.use(requireAuth)
 
-router.post('/reciept', upload.single("receipt"), vision_pro);
+router.post('/receipt', upload.single("receipt"), vision_pro);
 
 module.exports = router;
