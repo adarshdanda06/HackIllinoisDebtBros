@@ -1,5 +1,6 @@
-const driver = require('../server')
+//const driver = require('../server')
 const { v1: uuidv1 } = require('uuid')
+const neo4j = require('neo4j-driver')
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
 
@@ -13,13 +14,35 @@ const hashPassword = async (password) => {
     return hash
 }
 
+const initDriver = async () => {
+    try {
+        // connecting to db
+        const URI = 'neo4j+s://7d1a0d62.databases.neo4j.io'; // Replace with your actual URI
+        const USER = 'neo4j'; // Replace with your actual username
+        const PASSWORD = 'SYJog0Ps7HJLMg6cpGSwGxftlfuIjdqreFewtbMaIP8'; // Replace with your actual password
+
+        driver = neo4j.driver(URI, neo4j.auth.basic(USER, PASSWORD));
+        const session = driver.session();
+        try {
+            const result = await session.run('RETURN 1 AS test');
+            console.log('Connection test successful:', result.records[0].get('test').toInt() === 1);
+        } finally {
+            await session.close();
+        }
+        return driver;
+    } catch (err) {
+        console.error('Connection test failed:', err);
+        throw err;
+    }
+};
 // Create new user
 const signup = async (req,res) => {
     const { username, password } = req.body
     const groupID = uuidv1()
-
+    const driver = await initDriver();
     let session = driver.session()
     try {
+
         if (!username || !password) {
             throw new Error("Both fields must be filled!")
         }
@@ -49,6 +72,7 @@ const signup = async (req,res) => {
         await session.close()
     }        
 }
+
 
 const login = async (req, res) => {
     const { username, password } = req.body
@@ -91,3 +115,4 @@ module.exports = {
     signup,
     login
 }
+
